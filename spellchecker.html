@@ -1,0 +1,44 @@
+<html>
+
+<head>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <script>
+        $(document).ready(() => {
+            document.getElementById('filechoice').addEventListener('change',
+                function() {
+                    var fr = new FileReader();
+                    fr.onload = function() {
+                        let chars = this.result;
+                        fetch('http://localhost:8080/checkSpell', {
+                                method: 'POST',
+                                body: JSON.stringify({
+                                    key: chars
+                                }),
+                                headers: new Headers({
+                                    'Content-Type': 'application/json'
+                                })
+                            }).then(response => {
+                                return response.json();
+                            })
+                            .then(data => {
+                                console.log(data);
+                                data.data.map((content) => {
+                                    $("#list").append('<li>' + content + '</li>');
+                                })
+                            });
+                    };
+                    fr.readAsText(this.files[0]);
+                }
+            );
+        });
+    </script>
+
+</head>
+
+<body>
+    <input type="file" id="filechoice" />
+    <ul id="list"></ul>
+</body>
+
+
+</html>
